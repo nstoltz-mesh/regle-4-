@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur Règle du 4% - Décaissement Retraite</title>
+    <style>
+        /* Design System pour Règle du 4% */
+        :root {
+            --vert-principal: rgb(78, 122, 81);
+            --vert-pale: rgb(116, 150, 112);
+            --bleu-moyen: rgb(165, 207, 227);
+            --vert-gris-fonce: rgb(0, 34, 28);
+            --vert-eau: rgb(1, 132, 118);
+            --bleu-hiver: rgb(231, 246, 252);
+            --blanc: rgb(255, 255, 255);
+            --shadow-douce: 0 2px 8px rgba(0, 34, 28, 0.1);
+            --shadow-hover: 0 4px 16px rgba(0, 34, 28, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--blanc);
+            color: var(--vert-gris-fonce);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .intro-section {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--bleu-hiver) 0%, rgba(231, 246, 252, 0.3) 100%);
+            border-radius: 20px;
+            border: 2px solid var(--vert-eau);
+        }
+
+        .intro-text {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: var(--vert-gris-fonce);
+        }
+
+        .calculateurs-container {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .calculateur-card {
+            background: var(--blanc);
+            border: 2px solid var(--vert-pale);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: var(--shadow-douce);
+            transition: all 0.3s ease;
+        }
+
+        .calculateur-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            color: var(--vert-principal);
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .formule {
+            background: var(--bleu-hiver);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.1em;
+            color: var(--vert-eau);
+            margin-bottom: 25px;
+            border: 1px solid var(--vert-eau);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .input-row .input-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--vert-gris-fonce);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--vert-principal);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: var(--blanc);
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--vert-eau);
+            box-shadow: 0 0 0 3px rgba(1, 132, 118, 0.1);
+        }
+
+        .btn-calculer {
+            width: 100%;
+            background: var(--vert-principal);
+            color: var(--blanc);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-calculer:hover {
+            background: rgb(68, 102, 71);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-douce);
+        }
+
+        .resultat-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--bleu-hiver);
+            border: 2px solid var(--vert-eau);
+            border-radius: 12px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .resultat-label {
+            font-weight: 500;
+            color: var(--vert-gris-fonce);
+            margin-bottom: 10px;
+        }
+
+        .resultat-valeur {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--vert-principal);
+        }
+
+        .message-erreur {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            color: #c33;
+            text-align: center;
+        }
+
+        .message-alerte {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            color: #856404;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .section-title {
+            color: var(--vert-principal);
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-description {
+            text-align: center;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            color: var(--vert-gris-fonce);
+        }
+
+        .exemples-section {
+            margin: 50px 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: var(--shadow-douce);
+        }
+
+        .exemples-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--blanc);
+        }
+
+        .exemples-table th {
+            background: var(--vert-pale);
+            color: var(--blanc);
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .exemples-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .exemples-table tr:hover {
+            background: var(--bleu-hiver);
+        }
+
+        .info-section {
+            margin: 50px 0;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .info-card {
+            background: var(--blanc);
+            border: 2px solid var(--vert-pale);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow-douce);
+            transition: all 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .info-card-title {
+            color: var(--vert-principal);
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .info-card-text, .info-list {
+            line-height: 1.7;
+            color: var(--vert-gris-fonce);
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            margin: 8px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-list li::before {
+            content: "✓";
+            color: var(--vert-eau);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .chart-container {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--bleu-hiver);
+            border: 2px solid var(--vert-eau);
+            border-radius: 12px;
+        }
+
+        #chart {
+            width: 100%;
+            height: 300px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            border-top: 2px solid var(--vert-pale);
+            color: var(--vert-gris-fonce);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px 15px; }
+            .intro-section { padding: 25px; }
+            .calculateur-card { padding: 20px; }
+            .input-row { flex-direction: column; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+        </style>
+</head>
+<body>
+    <!-- Container principal -->
+    <div class="container">
+
+        <!-- Section d'introduction -->
+        <section class="intro-section">
+            <p class="intro-text">
+                La <strong>règle du 4%</strong> est une stratégie de décaissement utilisée pour estimer 
+                combien retirer annuellement d'un portefeuille de retraite sans risquer de manquer d'argent 
+                sur une période de 30 ans. Développée par <strong>William Bengen</strong> en 1994, elle 
+                constitue un pilier de la planification financière de la retraite.
+            </p>
+        </section>
+
+        <!-- Section des calculateurs -->
+        <div class="calculateurs-container">
+
+            <!-- Calculateur 1: Capital nécessaire -->
+            <div class="calculateur-card">
+                <h2 class="card-title">Capital nécessaire pour la retraite</h2>
+                <div class="formule">Capital nécessaire = Dépenses annuelles ÷ 0,04</div>
+
+                <div class="input-group">
+                    <label for="depenses-input">Dépenses annuelles souhaitées à la retraite ($):</label>
+                    <input type="number" id="depenses-input" placeholder="Ex: 40000" min="0" step="1000">
+                </div>
+
+                <button class="btn-calculer" onclick="calculerCapital()">Calculer</button>
+
+                <div id="resultat-capital" class="resultat-box hidden">
+                    <div class="resultat-label">Capital total nécessaire:</div>
+                    <div class="resultat-valeur" id="valeur-capital"></div>
+                </div>
+
+                <div id="erreur-capital" class="message-erreur hidden"></div>
+            </div>
+
+            <!-- Calculateur 2: Retrait annuel -->
+            <div class="calculateur-card">
+                <h2 class="card-title">Retrait annuel sécuritaire</h2>
+                <div class="formule">Retrait annuel = Capital × 4%</div>
+
+                <div class="input-group">
+                    <label for="capital-input">Capital épargné pour la retraite ($):</label>
+                    <input type="number" id="capital-input" placeholder="Ex: 1000000" min="0" step="10000">
+                </div>
+
+                <button class="btn-calculer" onclick="calculerRetrait()">Calculer</button>
+
+                <div id="resultat-retrait" class="resultat-box hidden">
+                    <div class="resultat-label">Montant annuel sécuritaire à retirer:</div>
+                    <div class="resultat-valeur" id="valeur-retrait"></div>
+                </div>
+
+                <div id="erreur-retrait" class="message-erreur hidden"></div>
+            </div>
+
+            <!-- Calculateur 3: Simulation durabilité -->
+            <div class="calculateur-card">
+                <h2 class="card-title">Simulation de durabilité sur 30 ans</h2>
+                <div class="formule">Évolution du capital avec retraits et rendements</div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="capital-sim-input">Capital initial ($):</label>
+                        <input type="number" id="capital-sim-input" placeholder="1000000" min="0" step="10000">
+                    </div>
+                    <div class="input-group">
+                        <label for="retrait-sim-input">Retrait annuel ($):</label>
+                        <input type="number" id="retrait-sim-input" placeholder="40000" min="0" step="1000">
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label for="rendement-input">Taux de rendement annuel (%):</label>
+                        <input type="number" id="rendement-input" placeholder="6" min="0" max="20" step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <label for="inflation-input">Taux d'inflation annuel (%):</label>
+                        <input type="number" id="inflation-input" placeholder="2" min="0" max="10" step="0.1" value="2">
+                    </div>
+                </div>
+
+                <button class="btn-calculer" onclick="simulerDurabilite()">Calculer</button>
+
+                <div id="resultat-simulation" class="resultat-box hidden">
+                    <div class="resultat-label">Résultat de la simulation:</div>
+                    <div class="resultat-valeur" id="valeur-simulation"></div>
+                </div>
+
+                <div id="alerte-taux" class="message-alerte hidden"></div>
+                <div id="erreur-simulation" class="message-erreur hidden"></div>
+
+                <div id="chart-container" class="chart-container hidden">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section des exemples pratiques -->
+        <section class="exemples-section">
+            <h2 class="section-title">Exemples pratiques</h2>
+            <p class="section-description">
+                Tableau comparatif montrant différents scénarios d'application de la règle du 4% 
+                avec différents niveaux de capital de retraite.
+            </p>
+
+            <div class="table-container">
+                <table class="exemples-table">
+                    <thead>
+                        <tr>
+                            <th>Capital de retraite</th>
+                            <th>Retrait annuel (4%)</th>
+                            <th>Retrait mensuel</th>
+                            <th>Durée estimée</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>500 000 $</td>
+                            <td>20 000 $</td>
+                            <td>1 667 $</td>
+                            <td>30+ ans</td>
+                        </tr>
+                        <tr>
+                            <td>1 000 000 $</td>
+                            <td>40 000 $</td>
+                            <td>3 333 $</td>
+                            <td>30+ ans</td>
+                        </tr>
+                        <tr>
+                            <td>1 500 000 $</td>
+                            <td>60 000 $</td>
+                            <td>5 000 $</td>
+                            <td>30+ ans</td>
+                        </tr>
+                        <tr>
+                            <td>2 000 000 $</td>
+                            <td>80 000 $</td>
+                            <td>6 667 $</td>
+                            <td>30+ ans</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section informative -->
+        <section class="info-section">
+            <h2 class="section-title">À propos de la règle du 4%</h2>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3 class="info-card-title">Origine et fonctionnement</h3>
+                    <p class="info-card-text">
+                        Développée par <strong>William Bengen</strong> en 1994 et validée par 
+                        l'étude Trinity en 1998, la règle du 4% suggère de retirer 4% du capital 
+                        en première année de retraite, puis d'ajuster ce montant à l'inflation 
+                        les années suivantes. Basée sur un portefeuille <strong>60% actions / 40% obligations</strong>.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="info-card-title">Avantages</h3>
+                    <ul class="info-list">
+                        <li>Simplicité d'application</li>
+                        <li>Revenu prévisible et stable</li>
+                        <li>Basé sur données historiques solides</li>
+                        <li>Durée testée sur 30 ans minimum</li>
+                        <li>Largement accepté par les conseillers</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="info-card-title">Limites et critiques</h3>
+                    <p class="info-card-text">
+                        Les critiques récentes soulignent que la règle ne s'adapte pas aux 
+                        <strong>conditions actuelles des marchés</strong>. Morningstar suggérait 
+                        3,3% en 2021 (ajusté à 4% en 2024), tandis que PWL Capital recommande 
+                        <strong>2,7%</strong> basé sur des données internationales moins biaisées.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="info-card-title">Considérations importantes</h3>
+                    <ul class="info-list">
+                        <li>Espérance de vie au-delà de 30 ans</li>
+                        <li>Revenus supplémentaires (RRQ, PSV, rentes)</li>
+                        <li>Conditions de marché au début de la retraite</li>
+                        <li>Flexibilité des retraits selon la performance</li>
+                        <li>Frais médicaux imprévus</li>
+                        <li>Désir de laisser un héritage</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="info-card-title">Alternatives à considérer</h3>
+                    <p class="info-card-text">
+                        <strong>Règle du 3%:</strong> Plus conservateur pour horizons longs.<br>
+                        <strong>Règle dynamique:</strong> Ajustement selon performance du marché.<br>
+                        <strong>Approche plafond-plancher:</strong> Retrait entre minimum et maximum selon les conditions.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3 class="info-card-title">Ajustements recommandés</h3>
+                    <p class="info-card-text">
+                        Pour une approche plus robuste, considérez commencer avec <strong>3-3,5%</strong> 
+                        et ajuster selon les performances. Maintenez une réserve d'urgence et 
+                        diversifiez vos sources de revenus de retraite pour réduire la dépendance 
+                        à un seul portefeuille.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2025 - Calculateur Règle du 4% | Outil de planification de retraite</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // Fonctions utilitaires
+        function formaterNombre(nombre) {
+            return new Intl.NumberFormat('fr-CA', {
+                style: 'currency',
+                currency: 'CAD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(nombre);
+        }
+
+        function afficherErreur(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+
+        function cacherErreur(elementId) {
+            const element = document.getElementById(elementId);
+            element.classList.add('hidden');
+        }
+
+        function afficherResultat(resultId, valeurId, valeur) {
+            document.getElementById(resultId).classList.remove('hidden');
+            document.getElementById(valeurId).textContent = valeur;
+        }
+
+        // Calculateur 1: Capital nécessaire
+        function calculerCapital() {
+            cacherErreur('erreur-capital');
+            document.getElementById('resultat-capital').classList.add('hidden');
+
+            const depenses = parseFloat(document.getElementById('depenses-input').value);
+
+            if (!depenses || depenses <= 0) {
+                afficherErreur('erreur-capital', 'Veuillez entrer un montant de dépenses valide.');
+                return;
+            }
+
+            const capitalNecessaire = depenses / 0.04;
+            const valeurFormatee = formaterNombre(capitalNecessaire);
+            
+            afficherResultat('resultat-capital', 'valeur-capital', valeurFormatee);
+        }
+
+        // Calculateur 2: Retrait annuel
+        function calculerRetrait() {
+            cacherErreur('erreur-retrait');
+            document.getElementById('resultat-retrait').classList.add('hidden');
+
+            const capital = parseFloat(document.getElementById('capital-input').value);
+
+            if (!capital || capital <= 0) {
+                afficherErreur('erreur-retrait', 'Veuillez entrer un montant de capital valide.');
+                return;
+            }
+
+            const retraitAnnuel = capital * 0.04;
+            const valeurFormatee = formaterNombre(retraitAnnuel);
+            
+            afficherResultat('resultat-retrait', 'valeur-retrait', valeurFormatee);
+        }
+
+        // Calculateur 3: Simulation durabilité
+        function simulerDurabilite() {
+            cacherErreur('erreur-simulation');
+            document.getElementById('alerte-taux').classList.add('hidden');
+            document.getElementById('resultat-simulation').classList.add('hidden');
+            document.getElementById('chart-container').classList.add('hidden');
+
+            const capitalInitial = parseFloat(document.getElementById('capital-sim-input').value);
+            const retraitAnnuel = parseFloat(document.getElementById('retrait-sim-input').value);
+            const rendement = parseFloat(document.getElementById('rendement-input').value) / 100;
+            const inflation = parseFloat(document.getElementById('inflation-input').value) / 100;
+
+            if (!capitalInitial || capitalInitial <= 0) {
+                afficherErreur('erreur-simulation', 'Veuillez entrer un capital initial valide.');
+                return;
+            }
+
+            if (!retraitAnnuel || retraitAnnuel <= 0) {
+                afficherErreur('erreur-simulation', 'Veuillez entrer un retrait annuel valide.');
+                return;
+            }
+
+            if (rendement < 0 || rendement > 0.2) {
+                afficherErreur('erreur-simulation', 'Le taux de rendement doit être entre 0% et 20%.');
+                return;
+            }
+
+            // Vérifier le taux de retrait
+            const tauxRetrait = (retraitAnnuel / capitalInitial) * 100;
+            if (tauxRetrait > 4) {
+                const alerteElement = document.getElementById('alerte-taux');
+                alerteElement.textContent = `⚠️ Attention: Votre taux de retrait est de ${tauxRetrait.toFixed(1)}%, supérieur à la règle des 4%. Cela augmente le risque d'épuiser votre capital.`;
+                alerteElement.classList.remove('hidden');
+            }
+
+            // Simulation sur 30 ans
+            const donneesChart = [];
+            let capitalActuel = capitalInitial;
+            let retraitAjuste = retraitAnnuel;
+            let capitalEpuise = false;
+            let anneeEpuisement = null;
+
+            for (let annee = 0; annee <= 30; annee++) {
+                if (annee === 0) {
+                    donneesChart.push({ annee, capital: capitalActuel });
+                    continue;
+                }
+
+                // Retrait en début d'année
+                capitalActuel -= retraitAjuste;
+                
+                if (capitalActuel <= 0 && !capitalEpuise) {
+                    capitalEpuise = true;
+                    anneeEpuisement = annee;
+                    capitalActuel = 0;
+                }
+
+                // Rendement sur le capital restant
+                if (capitalActuel > 0) {
+                    capitalActuel *= (1 + rendement);
+                }
+
+                // Ajustement du retrait à l'inflation
+                retraitAjuste *= (1 + inflation);
+
+                donneesChart.push({ annee, capital: Math.max(0, capitalActuel) });
+
+                if (capitalEpuise && capitalActuel <= 0) break;
+            }
+
+            // Afficher le résultat
+            let messageResultat;
+            if (capitalEpuise) {
+                messageResultat = `❌ Capital épuisé après ${anneeEpuisement} ans`;
+            } else {
+                const capitalFinal = donneesChart[donneesChart.length - 1].capital;
+                messageResultat = `✅ Capital restant après 30 ans: ${formaterNombre(capitalFinal)}`;
+            }
+
+            afficherResultat('resultat-simulation', 'valeur-simulation', messageResultat);
+            creerGraphique(donneesChart);
+            document.getElementById('chart-container').classList.remove('hidden');
+        }
+
+        // Création du graphique
+        function creerGraphique(donnees) {
+            const canvas = document.getElementById('chart');
+            const ctx = canvas.getContext('2d');
+            
+            // Réinitialiser le canvas
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 300;
+            
+            const largeur = canvas.width;
+            const hauteur = canvas.height;
+            const marge = { top: 20, right: 30, bottom: 40, left: 80 };
+            
+            const largeurGraph = largeur - marge.left - marge.right;
+            const hauteurGraph = hauteur - marge.top - marge.bottom;
+            
+            // Trouver les valeurs min/max
+            const maxCapital = Math.max(...donnees.map(d => d.capital));
+            const maxAnnee = Math.max(...donnees.map(d => d.annee));
+            
+            // Effacer le canvas
+            ctx.clearRect(0, 0, largeur, hauteur);
+            
+            // Style
+            ctx.strokeStyle = 'rgb(1, 132, 118)';
+            ctx.fillStyle = 'rgb(1, 132, 118)';
+            ctx.lineWidth = 3;
+            
+            // Dessiner les axes
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgb(78, 122, 81)';
+            ctx.lineWidth = 2;
+            // Axe Y
+            ctx.moveTo(marge.left, marge.top);
+            ctx.lineTo(marge.left, hauteur - marge.bottom);
+            // Axe X
+            ctx.moveTo(marge.left, hauteur - marge.bottom);
+            ctx.lineTo(largeur - marge.right, hauteur - marge.bottom);
+            ctx.stroke();
+            
+            // Dessiner la courbe
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgb(1, 132, 118)';
+            ctx.lineWidth = 3;
+            
+            donnees.forEach((point, index) => {
+                const x = marge.left + (point.annee / maxAnnee) * largeurGraph;
+                const y = hauteur - marge.bottom - (point.capital / maxCapital) * hauteurGraph;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Ajouter des labels
+            ctx.fillStyle = 'rgb(0, 34, 28)';
+            ctx.font = '12px Segoe UI';
+            
+            // Label X
+            ctx.textAlign = 'center';
+            ctx.fillText('Années', largeur / 2, hauteur - 5);
+            
+            // Label Y
+            ctx.save();
+            ctx.translate(15, hauteur / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Capital ($)', 0, 0);
+            ctx.restore();
+            
+            // Graduations X
+            for (let i = 0; i <= 30; i += 5) {
+                const x = marge.left + (i / maxAnnee) * largeurGraph;
+                ctx.textAlign = 'center';
+                ctx.fillText(i.toString(), x, hauteur - marge.bottom + 20);
+            }
+            
+            // Graduations Y
+            for (let i = 0; i <= 5; i++) {
+                const valeur = (maxCapital * i) / 5;
+                const y = hauteur - marge.bottom - (i / 5) * hauteurGraph;
+                ctx.textAlign = 'right';
+                ctx.fillText(formaterNombre(valeur), marge.left - 10, y + 4);
+            }
+        }
+
+        // Gestion des touches Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const focusedElement = document.activeElement;
+                
+                if (focusedElement.id === 'depenses-input') {
+                    calculerCapital();
+                } else if (focusedElement.id === 'capital-input') {
+                    calculerRetrait();
+                } else if (['capital-sim-input', 'retrait-sim-input', 'rendement-input', 'inflation-input'].includes(focusedElement.id)) {
+                    simulerDurabilite();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
