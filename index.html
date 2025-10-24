@@ -141,6 +141,15 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .btn-large {
+            margin-bottom: 35px;
+        }
+
+        .simulation-inputs {
+            margin-bottom: 35px;
         }
 
         .btn-calculer:hover {
@@ -157,6 +166,65 @@
             border-radius: 12px;
             text-align: center;
             animation: fadeIn 0.5s ease;
+        }
+
+        #resultat-simulation {
+            margin-top: 30px;
+            animation: fadeIn 0.6s ease;
+            /* AUCUN background, border, padding - doit être invisible */
+        }
+
+        .simulation-message {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 1.05rem;
+            /* PAS de background par défaut */
+        }
+
+        .simulation-message.success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .simulation-message.warning {
+            background-color: #fff3e0;
+            color: #e65100;
+            border: 2px solid #ff9800;
+        }
+
+        #graphique-simulation {
+            display: block;
+            margin: 25px auto;
+            max-width: 100%;
+            height: auto;
+            border: 2px solid var(--vert-pale);
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .legende-graphique {
+            display: flex;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .legende-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: var(--vert-gris-fonce);
+        }
+
+        .legende-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
         }
 
         .resultat-label {
@@ -406,7 +474,7 @@
                     </div>
                 </div>
 
-                <div class="input-row">
+                <div class="input-row simulation-inputs">
                     <div class="input-group">
                         <label for="rendement-input">Taux de rendement annuel (%):</label>
                         <input type="number" id="rendement-input" placeholder="6" min="0" max="20" step="0.5">
@@ -417,18 +485,20 @@
                     </div>
                 </div>
 
-                <button class="btn-calculer" onclick="simulerDurabilite()">Calculer</button>
-
-                <div id="resultat-simulation" class="resultat-box hidden">
-                    <div class="resultat-label">Résultat de la simulation:</div>
-                    <div class="resultat-valeur" id="valeur-simulation"></div>
-                </div>
+                <button class="btn-calculer btn-large" onclick="simulerDurabilite()">Lancer la simulation</button>
 
                 <div id="alerte-taux" class="message-alerte hidden"></div>
                 <div id="erreur-simulation" class="message-erreur hidden"></div>
 
-                <div id="chart-container" class="chart-container hidden">
-                    <canvas id="chart"></canvas>
+                <div id="resultat-simulation" class="hidden">
+                    <div class="simulation-message" id="message-simulation"></div>
+                    <canvas id="graphique-simulation" width="800" height="400"></canvas>
+                    <div class="legende-graphique">
+                        <span class="legende-item">
+                            <span class="legende-color" style="background: rgb(78, 122, 81);"></span> 
+                            Évolution du capital
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -626,7 +696,6 @@
             cacherErreur('erreur-simulation');
             document.getElementById('alerte-taux').classList.add('hidden');
             document.getElementById('resultat-simulation').classList.add('hidden');
-            document.getElementById('chart-container').classList.add('hidden');
 
             const capitalInitial = parseFloat(document.getElementById('capital-sim-input').value);
             const retraitAnnuel = parseFloat(document.getElementById('retrait-sim-input').value);
@@ -693,26 +762,35 @@
 
             // Afficher le résultat
             let messageResultat;
+            let messageClass;
             if (capitalEpuise) {
                 messageResultat = `❌ Capital épuisé après ${anneeEpuisement} ans`;
+                messageClass = 'warning';
             } else {
                 const capitalFinal = donneesChart[donneesChart.length - 1].capital;
                 messageResultat = `✅ Capital restant après 30 ans: ${formaterNombre(capitalFinal)}`;
+                messageClass = 'success';
             }
 
-            afficherResultat('resultat-simulation', 'valeur-simulation', messageResultat);
+            // Afficher le message avec la classe appropriée
+            const messageElement = document.getElementById('message-simulation');
+            messageElement.textContent = messageResultat;
+            messageElement.className = `simulation-message ${messageClass}`;
+            messageElement.classList.remove('hidden');
+            
+            // Créer le graphique et afficher le résultat
             creerGraphique(donneesChart);
-            document.getElementById('chart-container').classList.remove('hidden');
+            document.getElementById('resultat-simulation').classList.remove('hidden');
         }
 
         // Création du graphique
         function creerGraphique(donnees) {
-            const canvas = document.getElementById('chart');
+            const canvas = document.getElementById('graphique-simulation');
             const ctx = canvas.getContext('2d');
             
             // Réinitialiser le canvas
-            canvas.width = canvas.offsetWidth;
-            canvas.height = 300;
+            canvas.width = 800;
+            canvas.height = 400;
             
             const largeur = canvas.width;
             const hauteur = canvas.height;
